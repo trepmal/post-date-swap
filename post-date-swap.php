@@ -15,9 +15,14 @@ function pds_restrict_manage_posts( $post_type ) {
 	}
 	?>
 	<span id="pds-span"></span>
-	<button id="pds-button" class="button" style="margin: 1px 8px 0" disabled="disabled">Swap post dates</button>
+	<button id="pds-button" class="button" style="margin: 1px 8px 0" disabled="disabled"><?php _e( 'Swap post dates', 'post-date-swap' ); ?></button>
 	<script>
 	jQuery(document).ready(function($){
+
+		var PDSText = {
+			swapped: '<?php _e( 'Swapped: %s', 'post-date-swap' ); ?>',
+			error: '<?php _e( 'error', 'post-date-swap' ); ?>'
+		}
 
 		$('input[type=checkbox][name="post\[\]"]').on('click',function(event) {
 			var $checked = $('input[type=checkbox][name="post\[\]"]:checked');
@@ -41,12 +46,13 @@ function pds_restrict_manage_posts( $post_type ) {
 				post_ids: post_ids,
 				nonce:    '<?php echo wp_create_nonce( 'pds' ); ?>'
 			}, function( data ) {
-				console.log( data.success );
 				if ( data.success ) {
-					$('tr#post-'+data.data.postA.ID+' .column-date').append('<br /><em>Swapped: ' + data.data.postA.post_date + '</em>' );
-					$('tr#post-'+data.data.postB.ID+' .column-date').append('<br /><em>Swapped: ' + data.data.postB.post_date + '</em>' );
+					$('tr#post-' + data.data.postA.ID + ' .column-date').append('<br /><em>' +
+						PDSText.swapped.replace( '%s', data.data.postA.post_date ) + '</em>' );
+					$('tr#post-' + data.data.postB.ID + ' .column-date').append('<br /><em>' +
+						PDSText.swapped.replace( '%s', data.data.postB.post_date ) + '</em>' );
 				} else {
-					alert( 'error' );
+					alert( PDSText.error );
 				}
 			}, 'json' );
 		});
